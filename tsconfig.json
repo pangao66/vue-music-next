@@ -16,6 +16,18 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "common/*": [
+        "src/common/*"
+      ],
+      "components/*": [
+        "src/components/*"
+      ],
+      "views/*": [
+        "src/views/*"
+      ],
+      "api/*": [
+        "src/api/*"
       ]
     },
     "lib": [

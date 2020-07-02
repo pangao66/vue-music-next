@@ -1,12 +1,14 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import lazyPlugin from 'vue3-lazy'
+import './common/stylus/index.styl'
 
-Vue.config.productionTip = false
-
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+createApp(App)
+  .use(router)
+  .use(store)
+  .use(lazyPlugin, {
+    loading: require('common/image/default.png'),
+  })
+  .mount('#app')

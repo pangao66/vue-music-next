@@ -1,14 +1,42 @@
-import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
+import { RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 
-Vue.use(VueRouter)
-
-  const routes: Array<RouteConfig> = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect: '/recommend',
+  },
+  {
+    path: '/rank',
+    name: 'rank',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import('@/views/rank/rank.vue')
+  },
+  {
+    path: '/singer',
+    component: () => import('@/views/singer/singer.vue'),
+    children: [
+      {
+        path: ':id',
+        component: () => import('views/singer-detail/singer-detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/search',
+    component: () => import('views/search/search.vue')
+  },
+  {
+    path: '/recommend',
+    component: () => import('views/recommend/recommend.vue'),
+    children: [
+      {
+        path: '/:id',
+        component: () => import('views/disc/disc.vue')
+      }
+    ]
   },
   {
     path: '/about',
@@ -20,7 +48,8 @@ Vue.use(VueRouter)
   }
 ]
 
-const router = new VueRouter({
+const router = createRouter({
+  history: createWebHashHistory(),
   routes
 })
 
