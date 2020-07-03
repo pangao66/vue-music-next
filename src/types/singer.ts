@@ -15,9 +15,10 @@ export interface SingerItemInt {
 export interface SingerSongInt {
   singerMid: string
   totalNum: number
+  songList: SongListItemInt[]
 }
 
-interface Interface {
+interface SongListItemInt {
   songInfo: {
     mid: string
   }

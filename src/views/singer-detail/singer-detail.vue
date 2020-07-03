@@ -23,7 +23,7 @@ export default defineComponent({
   setup (props) {
     const route = useRoute()
     const state = reactive({
-      songs: []
+      songs: [] as any
     })
     const title = computed(() => props.singer.name || '')
     const bgImage = computed(() => props.singer.avatar || '')
@@ -32,21 +32,21 @@ export default defineComponent({
       let ret: any[] = []
       console.log(list)
       list.forEach((item: { songInfo: any }) => {
-        console.log(item)
         let {songInfo} = item
         if (isValidMusic(songInfo)) {
           ret.push(createSong(songInfo))
         }
       })
+      console.log(ret)
       return ret
     }
 
     onMounted(async () => {
       const id = route.params.id as string
-      const {data} = await getSingerSongApi({id})
-      state.songs = data.songList || []
-      const list = normalizeSongs(state.songs)
-      console.log(list)
+      const {data: {data}} = await getSingerSongApi({id})
+      state.songs = normalizeSongs(data.songList)
+      console.log(state.songs)
+      console.log(props.singer)
     })
     return {
       bgImage,

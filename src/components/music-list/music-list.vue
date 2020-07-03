@@ -30,7 +30,7 @@
 import { defineComponent, ref, computed } from 'vue'
 import Scroll from 'components/scroll/scroll.vue'
 import { useRouter } from 'vue-router'
-import { getSingerSong } from 'api/music'
+// import { getSingerSong } from 'api/music'
 
 export default defineComponent({
   name: 'music-list',
