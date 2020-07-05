@@ -14,8 +14,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
+import Song from "common/js/song"
 
 export default defineComponent({
   props: {
@@ -30,24 +31,35 @@ export default defineComponent({
       default: false
     }
   },
-  methods: {
-    selectItem (item, index) {
-      this.$emit('select', item, index)
-    },
-    getDesc (song) {
+  setup (props, {emit}) {
+    function selectItem (item: any, index: number) {
+      console.log(item)
+      emit('select', item, index)
+    }
+
+    function getDesc (song: any) {
       return `${song.singer}·${song.album}`
-    },
-    getRankCls (index) {
+    }
+
+    function getRankText (index: number) {
+      if (index > 2) {
+        return index + 1
+      }
+    }
+
+    function getRankCls (index: number) {
       if (index <= 2) {
         return `icon icon${index}`
       } else {
         return 'text'
       }
-    },
-    getRankText (index) {
-      if (index > 2) {
-        return index + 1
-      }
+    }
+
+    return {
+      selectItem,
+      getDesc,
+      getRankText,
+      getRankCls
     }
   }
 })

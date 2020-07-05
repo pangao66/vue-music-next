@@ -28,6 +28,7 @@ export default defineComponent({
       router.push({
         path: `/singer/${singer.id}`
       })
+      state.singer = singer
     }
 
     async function getHotSinger () {

@@ -4,20 +4,20 @@
       <i class="icon-back"></i>
     </div>
     <h1 class="title" v-html="title"></h1>
-    <div class="bg-image" :style="bgStyle" ref="bgImage">
+    <div class="bg-image" :style="bgStyle" ref="bgImageRef">
       <div class="play-wrapper">
-        <div ref="playBtn" v-show="songs.length>0" class="play" @click="random">
+        <div ref="playBtnRef" v-show="songs.length>0" class="play" @click="random">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
       </div>
-      <div class="filter" ref="filter"></div>
+      <div class="filter" ref="filterRef"></div>
     </div>
-    <div class="bg-layer" ref="layer"></div>
-    <scroll @scroll="scroll"
-            :probe-type="3" class="list" ref="list">
+    <div class="bg-layer" ref="layerRef"></div>
+    <scroll @scroll="scroll" listen-scroll
+            :probe-type="3" class="list" ref="listRef">
       <div class="song-list-wrapper">
-        <!--        <song-list :songs="songs" :rank="rank" @select="selectItem"></song-list>-->
+        <song-list :songs="songs" :rank="rank" @select="selectItem"></song-list>
       </div>
       <div v-show="!songs.length" class="loading-container">
         <!--        <loading></loading>-->
@@ -27,11 +27,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref, computed, onMounted, toRefs } from 'vue'
 import Scroll from 'components/scroll/scroll.vue'
 import { useRouter } from 'vue-router'
+import SongList from 'components/song-list/song-list.vue'
 // import { getSingerSong } from 'api/music'
+import { useScroll } from './useScroll'
+import { usePlayerInject } from '../../store/player'
 
+const RESERVED_HEIGHT = 40
 export default defineComponent({
   name: 'music-list',
   props: {
@@ -56,6 +60,13 @@ export default defineComponent({
   },
   setup (props) {
     const router = useRouter()
+    const scrollY = ref(0)
+    const listRef = ref('' as unknown as any)
+    const bgImageRef = ref('' as unknown as HTMLDivElement)
+    const layerRef = ref('' as unknown as HTMLDivElement)
+    const filterRef = ref('' as unknown as HTMLDivElement)
+    const playBtnRef = ref('' as unknown as HTMLDivElement)
+    const {scroll} = useScroll({layerRef, filterRef, bgImageRef, playBtnRef, listRef})
 
     function back () {
       router.go(-1)
@@ -69,16 +80,20 @@ export default defineComponent({
 
     }
 
-    function scroll () {
 
+    function selectItem (item: any, index: number) {
+      console.log(item)
+      selectPlay({list: props.songs, index})
     }
 
-    // bgStyle()
-    // {
-    //   return `background-image:url(${this.bgImage})`
-    // }
     const bgStyle = computed(() => {
       return `background-image:url(${props.bgImage})`
+    })
+    const {selectPlay} = usePlayerInject()
+    onMounted(() => {
+      setTimeout(() => {
+        console.log(bgImageRef.value)
+      }, 3000)
     })
     return {
       back,
@@ -87,12 +102,21 @@ export default defineComponent({
       // bgImage: props.bgImage,
       bgStyle,
       scroll,
-      router
+      router,
+      selectItem,
+      selectPlay,
+      bgImageRef,
+      listRef,
+      layerRef,
+      filterRef,
+      playBtnRef
+      // ...toRefs(useScroll({minTranslateY: 0, imageHeight: 0}))
       // title: props.title
     }
   },
   components: {
-    Scroll
+    Scroll,
+    SongList
   }
 })
 </script>

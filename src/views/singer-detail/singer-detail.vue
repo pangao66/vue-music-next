@@ -12,6 +12,7 @@ import { createSong, isValidMusic, processSongsUrl } from 'common/js/song'
 import { useRoute } from 'vue-router'
 import { getSingerSongApi } from "api/music"
 
+
 export default defineComponent({
   name: 'singer-detail',
   props: {
@@ -45,8 +46,8 @@ export default defineComponent({
       const id = route.params.id as string
       const {data: {data}} = await getSingerSongApi({id})
       state.songs = normalizeSongs(data.songList)
-      console.log(state.songs)
-      console.log(props.singer)
+      // console.log(state.songs)
+      console.log(bgImage)
     })
     return {
       bgImage,
@@ -64,6 +65,6 @@ export default defineComponent({
 <style lang="stylus" scoped>
   .slide-enter-active, .slide-leave-active
     transition: all 0.3s
-  .slide-enter, .slide-leave-to
+  .slide-enter-from, .slide-leave-to
     transform: translate3d(100%, 0, 0)
 </style>

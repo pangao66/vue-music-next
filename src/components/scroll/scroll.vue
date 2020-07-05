@@ -7,24 +7,41 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import BScroll from '@better-scroll/core'
 import ObserveDOM from '@better-scroll/observe-dom'
 
+// const scrollFn = (payload: { x: number; y: number }) => void
 BScroll.use(ObserveDOM)
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, ref, } from 'vue'
 
 export default defineComponent({
   name: 'scroll',
-  setup () {
+  props: {
+    listenScroll: {
+      type: Boolean,
+      default: false
+    }
+  },
+  // emits: {
+  // scroll (payload: { x: number, y: number }) {
+  // }
+  // },
+  setup (props, {emit}) {
     const wrapper = ref('')
     let scroll = null
     onMounted(() => {
-      // let wrapper = document.querySelector('.wrapper')
       scroll = new BScroll(wrapper.value, {
         observeDOM: true,
-        click: true
+        click: true,
+        listenScroll: props.listenScroll,
+        probeType: 3,
       })
+      if (props.listenScroll) {
+        scroll.on('scroll', (pos: { x: number, y: number }) => {
+          emit('scroll', pos)
+        })
+      }
     })
     return {
       wrapper
