@@ -4,7 +4,7 @@ import Singer from "common/js/singer"
 import singer from "views/singer/singer.vue"
 
 
-type PlayerContext = {
+export type PlayerContext = {
   state: {
     singer: Singer
     playing: boolean
@@ -66,7 +66,6 @@ function setCurrentIndex (currentIndex: number) {
 }
 
 function selectPlay ({list, index}: { index: number, list: any[] }) {
-  console.log(list)
   setSequenceList(list)
   setPlayList(list)
   setCurrentIndex(index)
@@ -85,7 +84,8 @@ export const usePlayerStore = function () {
     setSequenceList,
     setPlayMode,
     setCurrentIndex,
-    selectPlay
+    selectPlay,
+    setPlayingState
   })
 }
 export const usePlayerInject = function () {

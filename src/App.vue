@@ -11,11 +11,12 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, provide, toRefs } from 'vue'
+import { defineComponent } from 'vue'
+import { usePlayerStore } from './store/player'
 import MHeader from '@/components/m-header/m-header.vue'
 import Tab from '@/components/tab/tab.vue'
 import Player from 'components/player/player.vue'
-import { usePlayerStore } from './store/player'
+
 
 export default defineComponent({
   components: {MHeader, Tab, Player},

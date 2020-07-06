@@ -31,23 +31,20 @@ export default defineComponent({
 
     function normalizeSongs (list: any) {
       let ret: any[] = []
-      console.log(list)
       list.forEach((item: { songInfo: any }) => {
         let {songInfo} = item
         if (isValidMusic(songInfo)) {
           ret.push(createSong(songInfo))
         }
       })
-      console.log(ret)
       return ret
     }
 
     onMounted(async () => {
       const id = route.params.id as string
       const {data: {data}} = await getSingerSongApi({id})
-      state.songs = normalizeSongs(data.songList)
-      // console.log(state.songs)
-      console.log(bgImage)
+      const songs = normalizeSongs(data.songList)
+      state.songs = await processSongsUrl(songs)
     })
     return {
       bgImage,

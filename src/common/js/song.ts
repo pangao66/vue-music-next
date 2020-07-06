@@ -2,6 +2,7 @@
 // import { getLyric, getSongsUrl } from 'api/song'
 // import { ERR_OK } from 'api/config'
 import { Base64 } from 'js-base64'
+import { getSongUrl } from "api/music"
 
 export default class Song {
   constructor ({id, mid, singer, name, album, duration, image, url}) {
@@ -62,19 +63,26 @@ export function isValidMusic (musicData) {
   return musicData.id && musicData.album.id && (!musicData.pay || musicData.pay.price_album === 0)
 }
 
-export function processSongsUrl (songs: any) {
+export async function processSongsUrl (songs: any) {
   if (!songs.length) {
     return Promise.resolve(songs)
   }
-  // return getSongsUrl(songs).then((purlMap) => {
-  //   songs = songs.filter((song) => {
-  //     const purl = purlMap[song.mid]
-  //     if (purl) {
-  //       song.url = purl.indexOf('http') === -1 ? `http://dl.stream.qqmusic.qq.com/${purl}` : purl
-  //       return true
-  //     }
-  //     return false
-  //   })
-  //   return songs
-  // })
+  const mids = songs.map((item) => item.mid)
+  const {data: {success, data}} = await getSongUrl({songMids: mids})
+  const {midurlinfo} = data?.req_0?.data
+  const purlMap = {}
+  midurlinfo.forEach((item) => {
+    if (item.purl) {
+      purlMap[item.songmid] = item.purl
+    }
+  })
+  songs = songs.filter((song) => {
+    const purl = purlMap[song.mid]
+    if (purl) {
+      song.url = purl.indexOf('https') === -1 ? `https://dl.stream.qqmusic.qq.com/${purl}` : purl
+      return true
+    }
+    return false
+  })
+  return songs
 }

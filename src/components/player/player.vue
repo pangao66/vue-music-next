@@ -19,7 +19,7 @@
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
-                <img :src="currentSong.image" class="image">
+                <img :src="currentSong.image" class="image" :class="cdCls">
               </div>
             </div>
           </div>
@@ -29,14 +29,14 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i class="icon-prev" @click="prev"></i>
             </div>
-            <div class="icon i-center">
-              <i class="icon-play"></i>
+            <div class="icon i-center" :class="disableCls">
+              <i :class="playIcon" @click="togglePlay"></i>
             </div>
-            <div class="icon i-right">
-              <div class="icon-next"></div>
+            <div class="icon i-right" :class="disableCls">
+              <div class="icon-next" @click="next"></div>
             </div>
             <div class="icon icon-right">
               <i class="icon icon-not-favorite"></i>
@@ -49,41 +49,41 @@
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
           <div class="imgWrapper" ref="miniWrapper">
-            <img width="40" height="40" :src="currentSong.image">
+            <img width="40" height="40" :src="currentSong.image" :class="cdCls">
           </div>
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <div class="control"></div>
+        <div class="control">
+          <i :class="miniPlayIcon" @click.stop="togglePlay"></i>
+        </div>
         <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="error"></audio>
   </div>
 
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs } from 'vue'
+import { defineComponent, toRefs, watch, ref, computed, nextTick } from 'vue'
 import { usePlayerInject } from '../../store/player'
 import useAnimate from './useAnimate'
+import { usePlay, useReady } from "./usePlay"
 // import animations from 'create-keyframe-animation'
 export default defineComponent({
   name: 'player',
   setup () {
-
-
-    const {state, currentSong, setFullScreen} = usePlayerInject()
-    const {
-      enter,
-      afterEnter,
-      leave,
-      afterLeave,
-      cdWrapper
-    } = useAnimate()
+    const audio = ref('' as unknown as HTMLAudioElement)
+    const songReady = ref(false)
+    const {state, currentSong, setFullScreen, setPlayingState, setCurrentIndex} = usePlayerInject()
+    const {playIcon, miniPlayIcon, cdCls, disableCls} = usePlay(audio, state, currentSong, songReady)
+    const {ready, error} = useReady(songReady)
+    const {enter, afterEnter, leave, afterLeave, cdWrapper} = useAnimate()
 
     function back () {
       setFullScreen(false)
@@ -91,6 +91,41 @@ export default defineComponent({
 
     function open () {
       setFullScreen(true)
+    }
+
+    /******--------播放控制--------********/
+    // 暂停/播放
+    function togglePlay () {
+      setPlayingState(!state.playing)
+    }
+
+    // 下一曲
+    function next () {
+      let index = state.currentIndex + 1
+      if (index === state.playlist.length) {
+        index = 0
+      }
+      setCurrentIndex(index)
+      if (state.playing) {
+        togglePlay()
+      }
+      songReady.value = false
+    }
+
+    // 上一曲
+    function prev () {
+      if (!songReady.value) {
+        return
+      }
+      let index = state.currentIndex - 1
+      if (index === -1) {
+        index = state.playlist.length - 1
+      }
+      setCurrentIndex(index)
+      if (state.playing) {
+        togglePlay()
+      }
+      songReady.value = false
     }
 
     return {
@@ -102,7 +137,19 @@ export default defineComponent({
       afterEnter,
       leave,
       afterLeave,
-      cdWrapper
+      cdWrapper,
+      audio,
+      togglePlay,
+      //--播放状态图标---//
+      playIcon,
+      miniPlayIcon,
+      cdCls,
+      disableCls,
+      // 播放控制
+      next,
+      prev,
+      // ready
+      songReady, ready, error
     }
   }
 })

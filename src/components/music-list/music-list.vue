@@ -60,7 +60,6 @@ export default defineComponent({
   },
   setup (props) {
     const router = useRouter()
-    const scrollY = ref(0)
     const listRef = ref('' as unknown as any)
     const bgImageRef = ref('' as unknown as HTMLDivElement)
     const layerRef = ref('' as unknown as HTMLDivElement)

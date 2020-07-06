@@ -4,19 +4,20 @@ import { ref } from 'vue'
 const cdWrapper = ref('' as unknown as HTMLDivElement)
 
 function enter (el: HTMLElement, done: HTMLElementEventMap) {
-  const {x, y, scale} = getPosAndSc()
-  let animation = {
+  const {x, y, scale} = getPosAndScale()
+
+  const animation = {
     0: {
-      transform: `translate3d(${x}px, ${y}px,0) scale${scale}`
+      transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
     },
     60: {
-      transform: `translate3d(0,0,0) scale(1.1)`
+      transform: 'translate3d(0,0,0) scale(1.1)'
     },
     100: {
-      transform: `translate3d(0,0,0) scale(1)`
-    },
-
+      transform: 'translate3d(0,0,0) scale(1)'
+    }
   }
+
   animations.registerAnimation({
     name: 'move',
     animation,
@@ -25,6 +26,7 @@ function enter (el: HTMLElement, done: HTMLElementEventMap) {
       easing: 'linear'
     }
   })
+
   animations.runAnimation(cdWrapper.value, 'move', done)
 }
 
@@ -34,7 +36,7 @@ function afterEnter () {
 }
 
 function leave (el: HTMLElement, done: any) {
-  const {x, y, scale} = getPosAndSc()
+  const {x, y, scale} = getPosAndScale()
   cdWrapper.value.style.transition = 'all 0.4s'
   cdWrapper.value.style.transform = ` translate3d(${x}px,${y}px,0) scale(${scale})`
   cdWrapper.value.addEventListener('transitionend', done)
@@ -42,9 +44,10 @@ function leave (el: HTMLElement, done: any) {
 
 function afterLeave () {
   cdWrapper.value.style.transition = ''
+  cdWrapper.value.style.transform = ''
 }
 
-function getPosAndSc () {
+function getPosAndScale () {
   const targetWidth = 40
   const paddingLeft = 40
   const paddingBottom = 30
