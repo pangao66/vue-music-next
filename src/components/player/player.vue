@@ -23,6 +23,14 @@
               </div>
             </div>
           </div>
+          <scroll class="middle-r" ref="lyricListRef">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p :ref="el=>{lyricLineRef[i]=el}" class="text" :class="{current:currentLineNum===index}"
+                   v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
@@ -83,11 +91,12 @@
 import { computed, defineComponent, ref, toRefs } from 'vue'
 import { usePlayerInject } from '../../store/player'
 import useAnimate from './useAnimate'
-import { usePlay, useReady, useTime } from "./usePlay"
+import { usePlay, useReady, useTime, useLyric } from "./usePlay"
 import ProgressBar from 'components/progress-bar/progress-bar.vue'
 import ProgressCircle from "components/progress-circle/progress-circle.vue"
 import { playMode } from '@/common/js/config'
 import { shuffle } from "common/js/util"
+import Scroll from 'components/scroll/scroll.vue'
 // import animations from 'create-keyframe-animation'
 export default defineComponent({
   name: 'player',
@@ -99,6 +108,7 @@ export default defineComponent({
     const {ready, error} = useReady(songReady)
     const {enter, afterEnter, leave, afterLeave, cdWrapper} = useAnimate()
     const {currentTime, updateTime, formatTime} = useTime()
+    const {lyricState} = useLyric(currentSong, state)
     const percent = computed(() => {
       return currentTime.value / currentSong.value.duration
     })
@@ -216,12 +226,14 @@ export default defineComponent({
       // 时间控制
       currentTime, updateTime, formatTime,
       percent,
-      onProgressBarChange
+      onProgressBarChange,
+      ...toRefs(lyricState)
     }
   },
   components: {
     ProgressCircle,
-    ProgressBar
+    ProgressBar,
+    Scroll
   }
 })
 </script>
