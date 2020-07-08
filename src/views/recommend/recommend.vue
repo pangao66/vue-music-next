@@ -57,7 +57,7 @@ export default defineComponent({
       discList: [],
       recommend: [] as recommend[]
     })
-    const slider = ref(null as unknown as any)
+    const slider = ref(null as unknown as InstanceType<typeof Slider>)
     onMounted(async () => {
       const res = await axios.get('/api/music/getTopBanner')
       recommendData.recommend = res.data.data
@@ -66,6 +66,7 @@ export default defineComponent({
     })
 
     function selectItem (item: any) {
+      console.log(item)
       router.push({
         path: `/recommend/${item.dissid}`
       })

@@ -1,7 +1,9 @@
 <template>
   <div class="singer">
     <list-view :data="singerList" @select="selectSinger"></list-view>
-    <router-view :singer="singer"></router-view>
+    <transition appear name="slide">
+      <router-view :singer="singer"></router-view>
+    </transition>
   </div>
 </template>
 
@@ -20,7 +22,7 @@ export default defineComponent({
     const state = reactive({
       hot: [] as SingerItemInt[],
       common: [] as SingerItemInt[],
-      singer: {}
+      singer: {} as Singer
     })
 
 
@@ -100,4 +102,8 @@ export default defineComponent({
     top: 88px
     bottom: 0
     width: 100%
+  .slide-enter-active, .slide-leave-active
+    transition: all 0.3s
+  .slide-enter-from, .slide-leave-to
+    transform: translate3d(100%, 0, 0)
 </style>

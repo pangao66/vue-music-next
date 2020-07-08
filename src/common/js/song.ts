@@ -1,10 +1,21 @@
 // @ts-nocheck
 // import { getLyric, getSongsUrl } from 'api/song'
 // import { ERR_OK } from 'api/config'
+import { getMusicLyric } from 'api/music'
 import { Base64 } from 'js-base64'
 import { getSongUrl } from "api/music"
 
 export default class Song {
+  public id: string
+  public mid: string
+  public singer: string
+  public name: string
+  public album: string
+  public duration: number
+  public image: string
+  public url: string
+  public lyric: string
+
   constructor ({id, mid, singer, name, album, duration, image, url}) {
     this.id = id
     this.mid = mid
@@ -17,21 +28,17 @@ export default class Song {
     this.url = url
   }
 
-  getLyric () {
+  async getLyric () {
     if (this.lyric) {
       return Promise.resolve(this.lyric)
     }
-
-    return new Promise((resolve, reject) => {
-      // getLyric(this.mid).then((res) => {
-      //   if (res.retcode === ERR_OK) {
-      //     this.lyric = Base64.decode(res.lyric)
-      //     resolve(this.lyric)
-      //   } else {
-      //     reject(new Error('no lyric'))
-      //   }
-      // })
-    })
+    try {
+      const {data: {success, data}} = await getMusicLyric(this.mid)
+      this.lyric = Base64.decode(data)
+      return Promise.resolve(this.lyric)
+    } catch (e) {
+      return Promise.reject('暂无歌词')
+    }
   }
 }
 

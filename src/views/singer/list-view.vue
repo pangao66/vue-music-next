@@ -33,6 +33,7 @@
 <script lang="ts">
 import Scroll from 'components/scroll/scroll.vue'
 import { defineComponent, ref } from 'vue'
+import Song from "common/js/song"
 
 export default defineComponent({
   name: 'list-view',
@@ -45,11 +46,11 @@ export default defineComponent({
     }
   },
   setup (props, {emit}) {
-    function selectItem (item) {
+    function selectItem (item: Song) {
       emit('select', item)
     }
 
-    const list = ref([{name: 'djaof'}])
+    const list = ref([])
     return {
       selectItem,
       list

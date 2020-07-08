@@ -5,3 +5,8 @@ export const getHotSingerApi = () => axios.get<SingerItemInt[]>('/api/music/getH
 export const getCommonSingerApi = () => axios.get<SingerItemInt[]>('/api/music/getSingerList')
 export const getSingerSongApi = (params: { id: string }) => axios.get<SingerSongInt>('/api/music/getSingerDetail', {params})
 export const getSongUrl = ({songMids}: { songMids: string[] }) => axios.post('/api/music/getSongUrl', {songMids})
+export const getMusicLyric = (id: string) => axios.get<string>('/api/music/getLyric', {
+  params: {
+    id
+  }
+})

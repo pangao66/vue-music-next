@@ -1,8 +1,9 @@
-function getRandomInt (min, max) {
+// @ts-nocheck
+function getRandomInt (min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-export function shuffle (arr) {
+export function shuffle (arr: any[]) {
   let _arr = arr.slice()
   for (let i = 0; i < _arr.length; i++) {
     let j = getRandomInt(0, i)
@@ -13,7 +14,7 @@ export function shuffle (arr) {
   return _arr
 }
 
-export function debounce (func, delay) {
+export function debounce (func: Function, delay: number) {
   let timer
 
   return function (...args) {

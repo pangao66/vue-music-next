@@ -1,15 +1,15 @@
-// import { usePlayerInject } from '../../store/player'
-import { ref, watch, computed, Ref, ComputedRef } from 'vue'
-import { PlayerContext } from "@/store/player"
+import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { PlayStoreInt } from "@/types/playStore"
+import { playMode } from "common/js/config"
 
 export function usePlay (audio: Ref<HTMLAudioElement>, state: PlayStoreInt, currentSong: ComputedRef<any>, songReady: Ref<boolean>) {
-  // function togglePlay () {
-  //   setPlayingState(!state.playing)
-  // }
-  watch(() => currentSong.value, () => {
-    console.log(audio.value)
+  watch(() => currentSong.value, (newSong, oldSong) => {
+    if (newSong.id === oldSong.id) {
+      return
+    }
     audio.value.play().then()
+    getLyric().then(r => {
+    })
   })
   watch((() => state.playing), (newPlaying) => {
     newPlaying ? audio.value.play() : audio.value.pause()
@@ -26,12 +26,28 @@ export function usePlay (audio: Ref<HTMLAudioElement>, state: PlayStoreInt, curr
   const disableCls = computed(() => {
     return songReady.value ? '' : 'disable'
   })
+  const iconMode = computed(() => {
+    const map = {
+      [playMode.sequence]: 'icon-sequence',
+      [playMode.loop]: 'icon-loop',
+      [playMode.random]: 'icon-random'
+    }
+    return map[state.mode]
+  })
+
+  async function getLyric () {
+    const res = await currentSong.value.getLyric()
+    console.log(res)
+  }
+
   return {
     // togglePlay,
     playIcon,
     miniPlayIcon,
     cdCls,
-    disableCls
+    disableCls,
+    iconMode,
+    getLyric
   }
 }
 
@@ -49,4 +65,30 @@ export function useReady (songReady: Ref<boolean>) {
     ready,
     error
   }
+}
+
+export function useTime () {
+  const currentTime = ref(0)
+
+  function updateTime (e: Event) {
+    const target = e.target as HTMLAudioElement
+    currentTime.value = target.currentTime
+  }
+
+  function formatTime (interval: number) {
+    interval = interval | 0
+    const minute = interval / 60 | 0
+    const second = interval % 60
+    return `${minute}:${second.toString().padStart(2, '0')}`
+  }
+
+  return {
+    currentTime,
+    updateTime,
+    formatTime
+  }
+}
+
+function useLyric () {
+  const currentLyric = ref('')
 }

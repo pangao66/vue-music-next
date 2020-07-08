@@ -4,15 +4,15 @@
     <tab></tab>
     <router-view v-slot="{Component}">
       <keep-alive>
-        <component :is="Component"></component>
+        <component :is="Component" :style="routerViewBottom"></component>
       </keep-alive>
     </router-view>
     <player></player>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { usePlayerStore } from './store/player'
+import { defineComponent, toRefs, computed } from 'vue'
+import { usePlayerStore, usePlayerInject } from './store/player'
 import MHeader from '@/components/m-header/m-header.vue'
 import Tab from '@/components/tab/tab.vue'
 import Player from 'components/player/player.vue'
@@ -22,8 +22,18 @@ export default defineComponent({
   components: {MHeader, Tab, Player},
   setup () {
     usePlayerStore()
+    const {state} = usePlayerInject()
+    const routerViewBottom = computed(() => {
+      return {
+        bottom: state.playlist.length ? '60px' : '0'
+      }
+    })
+    return {
+      routerViewBottom
+    }
   }
 })
 </script>
-<style lang="stylus">
+<style>
+
 </style>

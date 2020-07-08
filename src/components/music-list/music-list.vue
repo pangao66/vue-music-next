@@ -76,7 +76,7 @@ export default defineComponent({
     }
 
     function random () {
-
+      randomPlay(props.songs)
     }
 
 
@@ -88,7 +88,7 @@ export default defineComponent({
     const bgStyle = computed(() => {
       return `background-image:url(${props.bgImage})`
     })
-    const {selectPlay} = usePlayerInject()
+    const {selectPlay, randomPlay} = usePlayerInject()
     onMounted(() => {
       setTimeout(() => {
         console.log(bgImageRef.value)
@@ -108,7 +108,8 @@ export default defineComponent({
       listRef,
       layerRef,
       filterRef,
-      playBtnRef
+      playBtnRef,
+      randomPlay
       // ...toRefs(useScroll({minTranslateY: 0, imageHeight: 0}))
       // title: props.title
     }
