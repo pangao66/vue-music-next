@@ -6,7 +6,6 @@
     <!-- 这里可以放一些其它的 DOM，但不会影响滚动 -->
   </div>
 </template>
-
 <script lang="ts">
 import BScroll from '@better-scroll/core'
 import ObserveDOM from '@better-scroll/observe-dom'
@@ -29,7 +28,16 @@ export default defineComponent({
   // },
   setup (props, {emit}) {
     const wrapper = ref('')
-    let scroll = null
+    let scroll = null as unknown as BScroll
+
+    function scrollTo () {
+      scroll && scroll.scrollTo.apply(scroll, arguments)
+    }
+
+    function scrollToElement () {
+      scroll && scroll.scrollToElement.apply(scroll, arguments)
+    }
+
     onMounted(() => {
       scroll = new BScroll(wrapper.value, {
         observeDOM: true,
@@ -44,12 +52,12 @@ export default defineComponent({
       }
     })
     return {
-      wrapper
+      wrapper,
+      scrollTo,
+      scrollToElement
     }
   }
 })
 </script>
-
-<style scoped>
-
-</style>
+<script>
+</script>

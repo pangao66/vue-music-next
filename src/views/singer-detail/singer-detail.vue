@@ -18,7 +18,7 @@ export default defineComponent({
   props: {
     singer: {
       type: Object,
-      default: () => ({})
+      default: () => ({name: "", avatar: ""})
     }
   },
   setup (props) {

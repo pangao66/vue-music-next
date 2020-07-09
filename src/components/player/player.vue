@@ -6,7 +6,7 @@
                 @after-leave="afterLeave">
       <div class="normal-player" v-show="fullScreen">
         <div class="background">
-          <img width="100%" height="100%" :src="currentSong.image">
+          <img width="100%" height="100%" style="width: 100%; height: 100%;" :src="currentSong.image">
         </div>
         <div class="top">
           <div class="back" @click="back">
@@ -15,24 +15,35 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
-          <div class="middle-l">
+        <div class="middle"
+             @touchstart.prevent="middleTouchStart"
+             @touchmove.prevent="middleTouchMove"
+             @touchend.prevent="middleTouchEnd"
+        >
+          <div class="middle-l" ref="middleLeftRef">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
                 <img :src="currentSong.image" class="image" :class="cdCls">
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
+            </div>
           </div>
           <scroll class="middle-r" ref="lyricListRef">
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
-                <p :ref="el=>{lyricLineRef[i]=el}" class="text" :class="{current:currentLineNum===index}"
+                <p :ref="el=>{lyricLineRef[index]=el}" class="text" :class="{current:currentLineNum===index}"
                    v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
               </div>
             </div>
           </scroll>
         </div>
         <div class="bottom">
+          <div class="dot-wrapper">
+            <div class="dot" :class="{active:currentShow==='cd'}"></div>
+            <div class="dot" :class="{active:currentShow==='lyric'}"></div>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{formatTime(currentTime)}}</span>
             <div class="progress-bar-wrapper">
@@ -88,10 +99,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, toRefs } from 'vue'
+import { computed, defineComponent, onBeforeUpdate, ref, toRefs } from 'vue'
 import { usePlayerInject } from '../../store/player'
 import useAnimate from './useAnimate'
-import { usePlay, useReady, useTime, useLyric } from "./usePlay"
+import { usePlay, useReady, useTime, useLyric, useShow } from "./usePlay"
 import ProgressBar from 'components/progress-bar/progress-bar.vue'
 import ProgressCircle from "components/progress-circle/progress-circle.vue"
 import { playMode } from '@/common/js/config'
@@ -108,7 +119,13 @@ export default defineComponent({
     const {ready, error} = useReady(songReady)
     const {enter, afterEnter, leave, afterLeave, cdWrapper} = useAnimate()
     const {currentTime, updateTime, formatTime} = useTime()
-    const {lyricState} = useLyric(currentSong, state)
+    const {lyricState, lyricListRef, lyricLineRef,} = useLyric(currentSong, state)
+    const {
+      currentShow, middleTouchStart,
+      middleTouchMove,
+      middleTouchEnd,
+      middleLeftRef
+    } = useShow(lyricListRef)
     const percent = computed(() => {
       return currentTime.value / currentSong.value.duration
     })
@@ -122,13 +139,19 @@ export default defineComponent({
     }
 
     /******--------播放控制--------********/
-    // 暂停/播放
-    function togglePlay () {
-      setPlayingState(!state.playing)
-    }
+      // 暂停/播放
+    const togglePlay = () => {
+        if (!songReady.value) {
+          return
+        }
+        setPlayingState(!state.playing)
+        if (lyricState.currentLyric) {
+          lyricState.currentLyric.togglePlay()
+        }
+      }
 
     // 下一曲
-    function next () {
+    const next = () => {
       let index = state.currentIndex + 1
       if (index === state.playlist.length) {
         index = 0
@@ -141,7 +164,7 @@ export default defineComponent({
     }
 
     // 上一曲
-    function prev () {
+    const prev = () => {
       if (!songReady.value) {
         return
       }
@@ -156,7 +179,7 @@ export default defineComponent({
       songReady.value = false
     }
 
-    function end () {
+    const end = () => {
       if (state.mode === playMode.loop) {
         loop()
       } else {
@@ -164,8 +187,12 @@ export default defineComponent({
       }
     }
 
-    function loop () {
+    const loop = () => {
       audio.value.currentTime = 0
+      audio.value.play()
+      if (lyricState.currentLyric) {
+        lyricState.currentLyric.seek(0)
+      }
     }
 
     // 切换播放模式
@@ -191,13 +218,20 @@ export default defineComponent({
     }
 
     function onProgressBarChange (percent: number) {
-      audio.value.currentTime = currentSong.value.duration * percent
+      const currentTime = currentSong.value.duration * percent
+      audio.value.currentTime = currentTime
       if (!state.playing) {
         togglePlay()
       }
+      if (lyricState.currentLyric) {
+        lyricState.currentLyric.seek(currentTime * 100)
+      }
     }
 
-
+// 确保在每次变更之前重置引用
+    onBeforeUpdate(() => {
+      lyricLineRef.value = []
+    })
     return {
       ...toRefs(state),
       currentSong,
@@ -227,7 +261,14 @@ export default defineComponent({
       currentTime, updateTime, formatTime,
       percent,
       onProgressBarChange,
-      ...toRefs(lyricState)
+      ...toRefs(lyricState),
+      lyricListRef,
+      lyricLineRef,
+      currentShow,
+      middleTouchStart,
+      middleTouchMove,
+      middleTouchEnd,
+      middleLeftRef
     }
   },
   components: {

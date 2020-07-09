@@ -7,7 +7,7 @@
             <slider class="slider" ref="slider">
               <div v-for="(item,index) in recommend" :key="index" class="slider-item">
                 <a :href="item.linkUrl">
-                  <img :src="item.picUrl">
+                  <img :src="item.picUrl" alt="t">
                 </a>
               </div>
             </slider>
@@ -74,15 +74,6 @@ export default defineComponent({
 
     let checkloaded = false
 
-    function imgLoad () {
-      if (!checkloaded) {
-        checkloaded = true
-        setTimeout(() => {
-          // slider.value.refresh()
-        }, 20)
-      }
-    }
-
     return {
       ...toRefs(recommendData),
       selectItem
@@ -95,7 +86,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
   .recommend
     position: fixed
     width: 100%

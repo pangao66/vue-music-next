@@ -62,7 +62,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
   .listview
     position: relative
     width: 100%

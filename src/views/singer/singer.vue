@@ -1,9 +1,11 @@
 <template>
   <div class="singer">
     <list-view :data="singerList" @select="selectSinger"></list-view>
-    <transition appear name="slide">
-      <router-view :singer="singer"></router-view>
-    </transition>
+    <router-view v-slot="{Component}">
+      <transition appear name="slide">
+        <component :is="Component" :singer="singer"></component>
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -34,7 +36,7 @@ export default defineComponent({
     }
 
     async function getHotSinger () {
-      const {data: {data}} = await getHotSingerApi()
+      const {data: {data, success}} = await getHotSingerApi()
       state.hot = data || []
     }
 
