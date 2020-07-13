@@ -35,7 +35,7 @@ export default defineComponent({
       hotKey: [] as HotKeyItem[],
       query: ''
     })
-    const searchBoxRef = ref('' as unknown as ReturnType<typeof defineComponent>)
+    const searchBoxRef = ref('' as unknown as ReturnType<typeof searchBox>)
     const addQuery = (query: string) => {
       searchBoxRef.value.setQuery(query)
     }

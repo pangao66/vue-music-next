@@ -112,7 +112,7 @@ import Scroll from 'components/scroll/scroll.vue'
 export default defineComponent({
   name: 'player',
   setup () {
-    const audio = ref('' as unknown as HTMLAudioElement)
+    const audio = ref(null as unknown as HTMLAudioElement)
     const songReady = ref(false)
     const {state, currentSong, setFullScreen, setPlayingState, setCurrentIndex, setPlayMode, setPlayList} = usePlayerInject()
     const {playIcon, miniPlayIcon, cdCls, disableCls, iconMode} = usePlay(audio, state, currentSong, songReady)

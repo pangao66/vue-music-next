@@ -13,11 +13,15 @@
         </div>
       </li>
     </ul>
+    <div v-show=" !result.length" class="no-result-wrapper">
+      <no-result title="抱歉，暂无搜索结果"></no-result>
+    </div>
   </scroll>
 </template>
 
 <script lang="ts">
 import Scroll from 'components/scroll/scroll.vue'
+import NoResult from 'components/no-result/no-result.vue'
 import { defineComponent, reactive, watch, computed, ComputedRef } from 'vue'
 import { searchMusic } from 'api/music'
 import { SearchItem } from "api/types"
@@ -86,7 +90,8 @@ export default defineComponent({
     }
   },
   components: {
-    Scroll
+    Scroll,
+    NoResult
   }
 })
 </script>

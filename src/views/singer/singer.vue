@@ -26,31 +26,25 @@ export default defineComponent({
       common: [] as SingerItemInt[],
       singer: {} as Singer
     })
-
-
-    function selectSinger (singer: Singer) {
+    const selectSinger = (singer: Singer) => {
       router.push({
         path: `/singer/${singer.id}`
       })
       state.singer = singer
     }
-
-    async function getHotSinger () {
+    const getHotSinger = async () => {
       const {data: {data, success}} = await getHotSingerApi()
       state.hot = data || []
     }
-
-    async function getCommonSinger () {
+    const getCommonSinger = async () => {
       const {data: {data}} = await getCommonSingerApi()
       state.common = data || []
     }
-
     function getSingerClass (list: SingerItemInt[]): Singer[] {
       return list.map((item) => {
         return new Singer(item.singer_mid, item.singer_name)
       })
     }
-
     const singerList = computed(() => {
       let map: any = {}
       let ret: any[] = []
