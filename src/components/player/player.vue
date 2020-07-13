@@ -153,12 +153,16 @@ export default defineComponent({
     // 下一曲
     const next = () => {
       let index = state.currentIndex + 1
-      if (index === state.playlist.length) {
-        index = 0
-      }
-      setCurrentIndex(index)
-      if (!state.playing) {
-        togglePlay()
+      if (state.playlist.length === 1) {
+        loop()
+      } else {
+        if (index === state.playlist.length) {
+          index = 0
+        }
+        setCurrentIndex(index)
+        if (!state.playing) {
+          togglePlay()
+        }
       }
       songReady.value = false
     }
@@ -168,13 +172,17 @@ export default defineComponent({
       if (!songReady.value) {
         return
       }
-      let index = state.currentIndex - 1
-      if (index === -1) {
-        index = state.playlist.length - 1
-      }
-      setCurrentIndex(index)
-      if (!state.playing) {
-        togglePlay()
+      if (state.playlist.length === 1) {
+        loop()
+      } else {
+        let index = state.currentIndex - 1
+        if (index === -1) {
+          index = state.playlist.length - 1
+        }
+        setCurrentIndex(index)
+        if (!state.playing) {
+          togglePlay()
+        }
       }
       songReady.value = false
     }

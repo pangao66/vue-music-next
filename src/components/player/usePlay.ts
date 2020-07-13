@@ -11,10 +11,6 @@ export function usePlay (audio: Ref<HTMLAudioElement>, state: PlayStoreInt, curr
       return
     }
     audio.value.play().then()
-    const lyric = await currentSong.value.getLyric()
-    // @ts-ignore
-    // currentLyric.value = new Lyric(lyric)
-    // console.log(currentLyric.value)
   })
   watch((() => state.playing), (newPlaying) => {
     newPlaying ? audio.value.play() : audio.value.pause()
@@ -39,12 +35,6 @@ export function usePlay (audio: Ref<HTMLAudioElement>, state: PlayStoreInt, curr
     }
     return map[state.mode]
   })
-
-  async function getLyric () {
-    const res = await currentSong.value.getLyric()
-    console.log(res)
-  }
-
   return {
     // togglePlay,
     playIcon,
@@ -52,7 +42,7 @@ export function usePlay (audio: Ref<HTMLAudioElement>, state: PlayStoreInt, curr
     cdCls,
     disableCls,
     iconMode,
-    getLyric
+    // getLyric
   }
 }
 
@@ -101,7 +91,7 @@ export function useTime () {
 
 export function useLyric (currentSong: ComputedRef<Song>, state: PlayStoreInt) {
   const lyricState = reactive({
-    currentLyric: null as unknown as Lyric,
+    currentLyric: null as null | Lyric,
     currentLineNum: 0,
     playingLyric: ''
   })
@@ -126,10 +116,16 @@ export function useLyric (currentSong: ComputedRef<Song>, state: PlayStoreInt) {
     if (lyricState.currentLyric) {
       lyricState.currentLyric.stop()
     }
-    const lyric = await currentSong.value.getLyric()
-    lyricState.currentLyric = new Lyric(lyric, handleLyric)
-    if (state.playing) {
-      lyricState.currentLyric.play(0)
+    try {
+      const lyric = await currentSong.value.getLyric()
+      lyricState.currentLyric = new Lyric(lyric, handleLyric)
+      if (state.playing) {
+        lyricState.currentLyric.play(0)
+      }
+    } catch (e) {
+      lyricState.currentLyric = null
+      lyricState.currentLineNum = 0
+      lyricState.playingLyric = ''
     }
   })
   return {
