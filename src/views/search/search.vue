@@ -1,11 +1,63 @@
 <template>
-
+  <div class="search">
+    <div class="search-box-wrapper">
+      <search-box @query="onQueryChange" ref="searchBoxRef"></search-box>
+    </div>
+    <div class="shortcut-wrapper" v-show="!query">
+      <div class="shortcut">
+        <div class="hot-key">
+          <h1 class="title">热门搜索</h1>
+          <ul>
+            <li @click="addQuery(item.k)" class="item" v-for="(item,index) in hotKey" :key="index">
+              <span>{{item.k}}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="search-result" v-show="query" ref="searchResult">
+      <suggest ref="suggest" :query="query"></suggest>
+    </div>
+  </div>
 </template>
 
-<script>
-export default {
-  name: 'search'
-}
+<script lang="ts">
+import SearchBox from './components/search-box.vue'
+import Suggest from './components/suggest.vue'
+import { defineComponent, onMounted, reactive, toRefs, ref } from 'vue'
+import { getHotkey } from 'api/music'
+import { HotKeyItem } from "api/types"
+
+export default defineComponent({
+  name: 'search',
+  setup () {
+    const state = reactive({
+      hotKey: [] as HotKeyItem[],
+      query: ''
+    })
+    const searchBoxRef = ref('' as unknown as ReturnType<typeof defineComponent>)
+    const addQuery = (query: string) => {
+      searchBoxRef.value.setQuery(query)
+    }
+    const onQueryChange = (query: string) => {
+      state.query = query.trim()
+    }
+    onMounted(async () => {
+      const {data: {data}} = await getHotkey()
+      state.hotKey = data.hotkey.splice(0, 10)
+    })
+    return {
+      addQuery,
+      onQueryChange,
+      searchBoxRef,
+      ...toRefs(state)
+    }
+  },
+  components: {
+    SearchBox,
+    Suggest
+  }
+})
 </script>
 
 <style scoped lang="stylus">
