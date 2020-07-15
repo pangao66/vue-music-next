@@ -13,3 +13,6 @@ export const getMusicLyric = (id: string) => axios.get<string>('/api/music/getLy
 })
 export const getHotkey = () => axios.get<HotKeyData>('/api/music/getHotKey')
 export const searchMusic = (keywords: string) => axios.get<SearchResultInt>('/api/music/search', {params: {keywords}})
+export const getSongInfo = (params: { song_mid?: string, song_id?: string }) => axios.get('/api/music/getSongInfo', {
+  params
+})

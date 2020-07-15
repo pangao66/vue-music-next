@@ -4,12 +4,12 @@
           :pullup="true"
   >
     <ul class="suggest-list">
-      <li class="suggest-item" v-for="item in result">
+      <li @click="selectItem(item)" class="suggest-item" v-for="item in result" :key="item.docid">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
         <div class="name">
-          <p class="text">{{item.name}}</p>
+          <p class="text">{{item.name}}-{{item.singer}}</p>
         </div>
       </li>
     </ul>
@@ -23,8 +23,13 @@
 import Scroll from 'components/scroll/scroll.vue'
 import NoResult from 'components/no-result/no-result.vue'
 import { defineComponent, reactive, watch, computed, ComputedRef } from 'vue'
-import { searchMusic } from 'api/music'
-import { SearchItem } from "api/types"
+import { searchMusic, getSongInfo } from 'api/music'
+import { SearchItem, SearchResultInt } from "api/types"
+import Singer from "common/js/singer"
+import { useRouter } from 'vue-router'
+import { usePlayerInject } from "@/store/player"
+import Song, { createSong } from "common/js/song"
+import { useStorageInject } from "@/store/stroageStore"
 
 export default defineComponent({
   name: 'suggest',
@@ -38,7 +43,7 @@ export default defineComponent({
       default: true
     }
   },
-  setup (props) {
+  setup (props, {emit}) {
     const state = reactive({
       page: 1,
       hasMore: false,
@@ -46,6 +51,7 @@ export default defineComponent({
       singer: [] as SearchItem[],
       songs: [] as SearchItem[]
     })
+    const router = useRouter()
     const search = async () => {
       const {data: {data}} = await searchMusic(props.query)
       const {singer, song} = data
@@ -69,6 +75,7 @@ export default defineComponent({
         })
       ]
     })
+    const {setSinger, insertSong} = usePlayerInject()
     type resultItemType = typeof result.value[0]
     const getIconCls = (item: resultItemType) => {
       const map = {
@@ -78,6 +85,19 @@ export default defineComponent({
       // @ts-ignore
       return map[item.type]
     }
+    const selectItem = async (item: SearchItem) => {
+      if (item.type === 'singer') {
+        const singer = new Singer(item.mid, item.singer)
+        await router.push({
+          path: `/search/${singer.id}`
+        })
+        setSinger(singer)
+      } else {
+        const {data: {data}} = await getSongInfo({song_mid: item.mid})
+        insertSong(createSong(data))
+      }
+      emit('select')
+    }
     watch((() => props.query), (value) => {
       if (!value) {
         return
@@ -86,7 +106,9 @@ export default defineComponent({
     })
     return {
       result,
-      getIconCls
+      getIconCls,
+      selectItem,
+      router
     }
   },
   components: {

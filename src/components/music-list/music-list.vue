@@ -67,7 +67,7 @@ export default defineComponent({
     const playBtnRef = ref('' as unknown as HTMLDivElement)
     const {scroll} = useScroll({layerRef, filterRef, bgImageRef, playBtnRef, listRef})
 
-    function back () {
+    const back = () => {
       router.go(-1)
     }
 

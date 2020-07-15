@@ -41,7 +41,7 @@ import axios from 'axios'
 import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
 import Slider from '@/components/slider/slider.vue'
 import Scroll from '@/components/scroll/scroll.vue'
-import router from '../../router'
+import { useRouter } from 'vue-router'
 
 // eslint-disable-next-line @typescript-eslint/class-name-casing
 interface recommend {
@@ -57,6 +57,7 @@ export default defineComponent({
       discList: [],
       recommend: [] as recommend[]
     })
+    const router = useRouter()
     const slider = ref(null as unknown as InstanceType<typeof Slider>)
     onMounted(async () => {
       const res = await axios.get('/api/music/getTopBanner')
@@ -76,7 +77,8 @@ export default defineComponent({
 
     return {
       ...toRefs(recommendData),
-      selectItem
+      selectItem,
+      router
     }
   },
   components: {

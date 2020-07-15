@@ -16,13 +16,11 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, ref, watch, nextTick } from 'vue'
-
 interface Touch {
   initiated: boolean
   startX: number
   left: number
 }
-
 const progressBtnWidth = 16
 export default defineComponent({
   name: 'progress-bar',
@@ -57,13 +55,11 @@ export default defineComponent({
       }
     })
     const touch = reactive({} as Touch)
-
     function progressTouchStart (e: TouchEvent) {
       touch.initiated = true
       touch.startX = e.touches[0].pageX
       touch.left = progress.value.clientWidth
     }
-
     function progressTouchMove (e: TouchEvent) {
       if (!touch.initiated) {
         return
@@ -72,18 +68,15 @@ export default defineComponent({
       const deltaX = e.touches[0].pageX - touch.startX
       offsetWidth.value = Math.min(progressBar.value.clientWidth - progressBtnWidth, Math.max(0, touch.left + deltaX))
     }
-
     function progressTouchEnd (e: TouchEvent) {
       touch.initiated = false
       triggerPercent()
     }
-
     function triggerPercent () {
       const barWidth = progressBar.value.clientWidth - progressBtnWidth
       const percent = progress.value.clientWidth / barWidth
       emit('percent-change', percent)
     }
-
     function progressClick (e: MouseEvent) {
       touch.initiated = true
       const rect = progressBar.value.getBoundingClientRect()
@@ -93,7 +86,6 @@ export default defineComponent({
         touch.initiated = false
       })
     }
-
     return {
       progressBar,
       progress,

@@ -48,4 +48,5 @@ export interface SearchItem {
   singer: string
   pic?: string
   vid?: string
+  type?: 'singer' | 'song'
 }

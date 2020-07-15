@@ -7,10 +7,15 @@ import Lyric from 'lyric-parser'
 export function usePlay (audio: Ref<HTMLAudioElement>, state: PlayStoreInt, currentSong: ComputedRef<Song>, songReady: Ref<boolean>) {
   // const currentLyric = ref({} as Lyric)
   watch(() => currentSong.value, async (newSong, oldSong) => {
-    if (newSong.id === oldSong.id) {
+    if (!newSong.id || !newSong.url || newSong.id === oldSong.id) {
       return
     }
-    audio.value.play().then()
+    try {
+      audio.value.src = newSong.url
+      await audio.value.play()
+    } catch (e) {
+      console.log(e)
+    }
   })
   watch((() => state.playing), (newPlaying) => {
     newPlaying ? audio.value.play() : audio.value.pause()

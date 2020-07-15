@@ -5,17 +5,17 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
+<script lang="ts" setup>
+declare const $props: {
+  msg: string
+}
+export default {
   props: {
-    title: {
-      type: String,
-      default: ''
-    }
-  }
-})
+    msg: String
+  },
+  inheritAttrs: false
+}
+
 </script>
 
 <style scoped lang="stylus">

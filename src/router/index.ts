@@ -26,7 +26,13 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/search',
-    component: () => import('views/search/search.vue')
+    component: () => import('views/search/search.vue'),
+    children: [
+      {
+        path: ':id',
+        component: () => import('views/singer-detail/singer-detail.vue')
+      }
+    ]
   },
   {
     path: '/recommend',

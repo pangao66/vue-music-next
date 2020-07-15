@@ -19,22 +19,10 @@ export default defineComponent({
   setup () {
     const state = reactive({
       tabList: [
-        {
-          name: '推荐',
-          to: '/recommend'
-        },
-        {
-          name: '歌手',
-          to: '/singer'
-        },
-        {
-          name: '排行',
-          to: '/rank'
-        },
-        {
-          name: '搜索',
-          to: '/search'
-        }
+        {name: '推荐', to: '/recommend'},
+        {name: '歌手', to: '/singer'},
+        {name: '排行', to: '/rank'},
+        {name: '搜索', to: '/search'}
       ] as TabItem[]
     })
     return {

@@ -13,34 +13,63 @@
             </li>
           </ul>
         </div>
+        <div class="search-history" v-show="searchHistory.length">
+          <h1 class="title">
+            <span class="text">搜索历史</span>
+            <span @click="showConfirm" class="clear">
+                <i class="icon-clear"></i>
+              </span>
+          </h1>
+          <teleport to="#modal">
+            <confirm ref="confirmRef" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
+          </teleport>
+          <search-list @select="addQuery" :searches="searchHistory"></search-list>
+        </div>
       </div>
     </div>
     <div class="search-result" v-show="query" ref="searchResult">
-      <suggest ref="suggest" :query="query"></suggest>
+      <suggest ref="suggest" :query="query" @select="saveSearch"></suggest>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script lang="ts">
 import SearchBox from './components/search-box.vue'
 import Suggest from './components/suggest.vue'
-import { defineComponent, onMounted, reactive, toRefs, ref } from 'vue'
+import SearchList from './components/search-list.vue'
+import Confirm from 'components/confirm.vue'
+import { defineComponent, onMounted, reactive, toRefs, ref, Teleport } from 'vue'
 import { getHotkey } from 'api/music'
 import { HotKeyItem } from "api/types"
+import { useStorageInject, useStorageProvide } from "@/store/stroageStore"
 
 export default defineComponent({
   name: 'search',
   setup () {
+    useStorageProvide()
     const state = reactive({
       hotKey: [] as HotKeyItem[],
       query: ''
     })
-    const searchBoxRef = ref('' as unknown as ReturnType<typeof searchBox>)
+    const searchBoxRef = ref('' as unknown as ReturnType<typeof SearchBox>)
+    const confirmRef = ref('' as unknown as ReturnType<typeof Confirm>)
+    const {searchHistory, saveSearch: saveSearchStorage, clearSearch} = useStorageInject()
+    const saveSearch = () => {
+      saveSearchStorage(state.query)
+    }
     const addQuery = (query: string) => {
       searchBoxRef.value.setQuery(query)
     }
     const onQueryChange = (query: string) => {
       state.query = query.trim()
+    }
+    const showConfirm = () => {
+      confirmRef.value.show()
+    }
+    const clearSearchHistory = () => {
+      console.log('删除')
+      clearSearch()
     }
     onMounted(async () => {
       const {data: {data}} = await getHotkey()
@@ -50,12 +79,20 @@ export default defineComponent({
       addQuery,
       onQueryChange,
       searchBoxRef,
+      confirmRef,
+      saveSearch,
+      searchHistory,
+      showConfirm,
+      clearSearchHistory,
       ...toRefs(state)
     }
   },
   components: {
     SearchBox,
-    Suggest
+    Suggest,
+    SearchList,
+    Teleport,
+    Confirm
   }
 })
 </script>

@@ -14,20 +14,14 @@ import { usePlayerInject } from "@/store/player"
 
 export default defineComponent({
   name: 'singer-detail',
-  props: {
-    singer: {
-      type: Object,
-      default: () => ({name: "", avatar: ""})
-    }
-  },
   setup (props) {
     const route = useRoute()
     const state = reactive({
       songs: [] as Song[]
     })
-    const title = computed(() => props.singer.name || '')
-    const bgImage = computed(() => props.singer.avatar || '')
     const {state: playerState} = usePlayerInject()
+    const title = computed(() => playerState.singer.name || '')
+    const bgImage = computed(() => playerState.singer.avatar || '')
 
     function normalizeSongs (list: any) {
       let ret: any[] = []

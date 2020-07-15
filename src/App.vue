@@ -11,19 +11,17 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, toRefs, computed, watch } from 'vue'
+import { defineComponent, computed, } from 'vue'
 import { usePlayerStore, usePlayerInject } from './store/player'
 import MHeader from '@/components/m-header/m-header.vue'
 import Tab from '@/components/tab/tab.vue'
 import Player from 'components/player/player.vue'
-
 
 export default defineComponent({
   components: {MHeader, Tab, Player},
   setup () {
     usePlayerStore()
     const {state} = usePlayerInject()
-    const playlist = state.playlist
     const routerViewBottom = computed(() => {
       return {
         bottom: state.playlist.length ? '60px' : '0'

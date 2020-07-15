@@ -16,6 +16,7 @@ import ListView from './list-view.vue'
 import { getCommonSingerApi, getHotSingerApi } from 'api/music'
 import { SingerItemInt } from "@/types/singer"
 import Singer from "common/js/singer"
+import { usePlayerInject } from "@/store/player"
 
 export default defineComponent({
   name: 'singer',
@@ -26,11 +27,13 @@ export default defineComponent({
       common: [] as SingerItemInt[],
       singer: {} as Singer
     })
+    const {setSinger} = usePlayerInject()
     const selectSinger = (singer: Singer) => {
       router.push({
         path: `/singer/${singer.id}`
       })
-      state.singer = singer
+      // state.singer = singer
+      setSinger(singer)
     }
     const getHotSinger = async () => {
       const {data: {data, success}} = await getHotSingerApi()
@@ -40,11 +43,13 @@ export default defineComponent({
       const {data: {data}} = await getCommonSingerApi()
       state.common = data || []
     }
+
     function getSingerClass (list: SingerItemInt[]): Singer[] {
       return list.map((item) => {
         return new Singer(item.singer_mid, item.singer_name)
       })
     }
+
     const singerList = computed(() => {
       let map: any = {}
       let ret: any[] = []
