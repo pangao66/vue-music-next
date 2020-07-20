@@ -5,13 +5,10 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-declare const $props: {
-  msg: string
-}
+<script lang="ts">
 export default {
   props: {
-    msg: String
+    title: String
   },
   inheritAttrs: false
 }

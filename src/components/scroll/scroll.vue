@@ -54,7 +54,8 @@ export default defineComponent({
     return {
       wrapper,
       scrollTo,
-      scrollToElement
+      scrollToElement,
+      scroll
     }
   }
 })

@@ -11,6 +11,15 @@ const headers = {
   host: 'c.y.qq.com'
 }
 module.exports = {
+  publicPath: process.env.NODE_ENV === 'production'
+    ? 'https://oss.noob6.com/music/'
+    : '/',
+  chainWebpack: config => {
+    // 移除 prefetch 插件
+    config.plugins.delete('prefetch')
+    // 移除 preload 插件
+    config.plugins.delete('preload')
+  },
   devServer: {
     proxy: {
       '/api': {

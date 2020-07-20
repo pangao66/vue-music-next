@@ -92,6 +92,7 @@
         </div>
       </div>
     </transition>
+    <playlist></playlist>
     <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="error" @timeupdate="updateTime"
            @ended="end"></audio>
   </div>
@@ -105,6 +106,7 @@ import useAnimate from './useAnimate'
 import { usePlay, useReady, useTime, useLyric, useShow } from "./usePlay"
 import ProgressBar from 'components/progress-bar/progress-bar.vue'
 import ProgressCircle from "components/progress-circle/progress-circle.vue"
+import Playlist from './playlist.vue'
 import { playMode } from '@/common/js/config'
 import { shuffle } from "common/js/util"
 import Scroll from 'components/scroll/scroll.vue'
@@ -282,7 +284,8 @@ export default defineComponent({
   components: {
     ProgressCircle,
     ProgressBar,
-    Scroll
+    Scroll,
+    Playlist
   }
 })
 </script>
