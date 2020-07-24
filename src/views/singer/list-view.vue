@@ -25,8 +25,10 @@
             </li>
           </ul>
         </div>
-        <div class="list-fixed" ref="fixed" v-show="fixedTitle">
-          <div class="fixed-title">{{fixedTitle}}</div>
+        <div class="list-fixed" style="overflow:hidden;" v-show="fixedTitle">
+          <div ref="fixedRef" style="width: 100%;height: 100%;">
+            <div class="fixed-title">{{fixedTitle}}</div>
+          </div>
         </div>
       </div>
     </teleport>
@@ -39,30 +41,33 @@
 <script lang="ts">
 import Scroll from 'components/scroll/scroll.vue'
 import { defineComponent, ref, computed, Teleport, watch, nextTick, onMounted, Fragment, onBeforeUpdate } from 'vue'
-import Song from "common/js/song"
+import Song from 'common/js/song'
 import { useRoute } from 'vue-router'
 
+const TITLE_HEIGHT = 30
+const ANCHOR_HEIGHT = 18
 export default defineComponent({
   name: 'list-view',
   props: {
     data: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     }
   },
-  setup (props, {emit}) {
+  setup(props, { emit }) {
     const route = useRoute()
     const listViewRef = ref('' as unknown as any)
     const divs = ref([])
+    const fixedRef = ref('' as undefined as HTMLDivElement)
 
-    function selectItem (item: Song) {
+    function selectItem(item: Song) {
       emit('select', item)
     }
 
     const listGroupRef = ref([])
-    let touch = {} as { y1: number, anchorIndex: number }
+    let touch = {} as { y1: number, y2: number, anchorIndex: number }
     const onShortcutTouchStart = (e: TouchEvent) => {
       const el = e.target!
       let anchorIndex = parseInt(el.getAttribute('data-index'))
@@ -72,6 +77,12 @@ export default defineComponent({
       _scrollTo(anchorIndex)
     }
     const onShortcutTouchMove = (e: TouchEvent) => {
+      let firstTouch = e.touches[0]
+      touch.y2 = firstTouch.pageY
+      let delta = (touch.y2 - touch.y1) / ANCHOR_HEIGHT | 0
+      let anchorIndex = parseInt(touch.anchorIndex.toString()) + delta
+
+      _scrollTo(anchorIndex)
     }
     const shortcutList = computed(() => {
       // @ts-ignore
@@ -95,7 +106,7 @@ export default defineComponent({
     }
     let listHeight: any[] = []
 
-    function _calculateHeight () {
+    function _calculateHeight() {
       listHeight = []
       const list = document.querySelectorAll('.singer-list-group')
       let height = 0
@@ -129,9 +140,17 @@ export default defineComponent({
       await nextTick()
       _calculateHeight()
     })
+    let fixedTopVal: any = null
+    watch(() => diff.value, (newVal) => {
+      let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+      if (fixedTopVal === fixedTop) {
+        return
+      }
+      fixedTopVal = fixedTop
+      fixedRef.value.style.transform = `translate3d(0,${ fixedTop }px,0)`
+    })
 
-
-    function _scrollTo (index: number) {
+    function _scrollTo(index: number) {
       if (!index && index !== 0) {
         return
       }
@@ -160,7 +179,8 @@ export default defineComponent({
       fixedTitle,
       scroll,
       route,
-      divs
+      divs,
+      fixedRef
     }
   },
   components: {

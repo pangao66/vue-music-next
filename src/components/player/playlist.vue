@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref, computed, toRefs } from 'vue'
 import { playMode } from '@/common/js/config'
 import { usePlayerInject } from '../../store/player'
 import Song from 'common/js/song'
@@ -49,20 +49,21 @@ import Scroll from 'components/scroll/scroll.vue'
 
 export default defineComponent({
   name: 'playlist',
-  setup () {
+  setup() {
     const showFlag = ref(true)
     const showConfirm = () => {
     }
     const hide = () => {
+      showFlag.value = false
     }
-    const {state: {sequenceList, mode}, currentSong} = usePlayerInject()
+    const { state, currentSong } = usePlayerInject()
     const iconMode = computed(() => {
       const map: Record<playMode, string> = {
         [playMode.sequence]: 'icon-sequence',
         [playMode.loop]: 'icon-loop',
         [playMode.random]: 'icon-random'
       }
-      return map[mode]
+      return map[state.mode]
     })
     const modeText = computed(() => {
       const map: Record<playMode, string> = {
@@ -70,7 +71,7 @@ export default defineComponent({
         [playMode.loop]: '单曲循环',
         [playMode.random]: '随机播放'
       }
-      return map[mode]
+      return map[state.mode]
     })
     const addSong = () => {
     }
@@ -96,12 +97,12 @@ export default defineComponent({
       modeText,
       addSong,
       showConfirm,
-      sequenceList,
       refreshDelay,
       getCurrentIcon,
       toggleFavorite,
       getFavoriteIcon,
-      deleteOne
+      deleteOne,
+      ...toRefs(state)
     }
   },
   components: {
