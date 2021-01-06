@@ -11,7 +11,7 @@
     "@better-scroll/observe-dom": "^2.0.0-beta.10",
     "@better-scroll/slide": "^2.0.0-beta.10",
     "@vueuse/core": "^3.0.35",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "create-keyframe-animation": "^0.1.0",
     "good-storage": "^1.1.1",
